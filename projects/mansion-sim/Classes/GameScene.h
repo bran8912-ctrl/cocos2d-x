@@ -4,6 +4,7 @@
 #include "cocos2d.h"
 #include "ui/CocosGUI.h"
 #include "GameManager.h"
+#include "VisualAssets.h"
 
 class GameScene : public cocos2d::Scene
 {
@@ -37,6 +38,11 @@ private:
     
     cocos2d::Layer* characterPanel;
     cocos2d::Label* characterList;
+    
+    cocos2d::Layer* characterCardsLayer;
+    
+    void createCharacterCards();
+    void updateCharacterCards();
 };
 
 #endif // __GAME_SCENE_H__

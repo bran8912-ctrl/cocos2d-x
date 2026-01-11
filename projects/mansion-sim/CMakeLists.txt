@@ -27,6 +27,7 @@ set(KEY_SOURCES
     Classes/GameManager.cpp
     Classes/AIEngine.cpp
     Classes/SaveManager.cpp
+    Classes/VisualAssets.cpp
     Classes/main.cpp
 )
 

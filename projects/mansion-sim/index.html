@@ -3,78 +3,61 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mansion Tycoon - AI Management Simulation</title>
+    <title>🏛️ Mansion Tycoon - AI Management Simulation</title>
     <style>
-        body {
+        * {
             margin: 0;
             padding: 0;
-            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
-            font-family: 'Arial', sans-serif;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 50%, #1a1a2e 100%);
+            font-family: 'Segoe UI', 'Arial', sans-serif;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
             min-height: 100vh;
+            color: #333;
+        }
+        
+        .header {
+            text-align: center;
+            color: white;
+            padding: 30px 20px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+        
+        .header h1 {
+            font-size: 3em;
+            margin-bottom: 10px;
+            background: linear-gradient(45deg, #FFD700, #FFA500);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.9;
         }
         
         #game-container {
             position: relative;
-            max-width: 1280px;
-            width: 100%;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+            max-width: 1400px;
+            width: 95%;
+            margin: 20px auto;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.4);
         }
         
         #canvas {
             display: block;
             width: 100%;
             height: auto;
-            background-color: #1a1a2e;
-        }
-        
-        #info-panel {
-            background: rgba(255,255,255,0.95);
-            padding: 20px;
-            margin: 20px;
-            border-radius: 10px;
-            max-width: 1240px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-        }
-        
-        h1 {
-            color: #2a5298;
-            margin: 0 0 10px 0;
-            font-size: 2em;
-        }
-        
-        h2 {
-            color: #1e3c72;
-            margin: 15px 0 10px 0;
-        }
-        
-        .feature-list {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 15px;
-            margin: 15px 0;
-        }
-        
-        .feature {
-            background: #f0f4ff;
-            padding: 15px;
-            border-radius: 8px;
-            border-left: 4px solid #2a5298;
-        }
-        
-        .feature h3 {
-            margin: 0 0 8px 0;
-            color: #1e3c72;
-            font-size: 1.1em;
-        }
-        
-        .feature p {
-            margin: 0;
-            color: #555;
-            font-size: 0.9em;
+            background: linear-gradient(180deg, #1a1a2e 0%, #16213e 100%);
         }
         
         #loading {
@@ -82,20 +65,21 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            background: rgba(0,0,0,0.8);
-            color: white;
-            padding: 30px 50px;
-            border-radius: 10px;
+            background: rgba(0,0,0,0.95);
+            color: #FFD700;
+            padding: 40px 60px;
+            border-radius: 15px;
             font-size: 1.5em;
             z-index: 1000;
+            text-align: center;
         }
         
         .spinner {
-            border: 4px solid rgba(255,255,255,0.3);
-            border-top: 4px solid white;
+            border: 4px solid rgba(255,215,0,0.3);
+            border-top: 4px solid #FFD700;
             border-radius: 50%;
-            width: 40px;
-            height: 40px;
+            width: 50px;
+            height: 50px;
             animation: spin 1s linear infinite;
             margin: 20px auto;
         }
@@ -104,66 +88,217 @@
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
+        
+        #info-panel {
+            background: linear-gradient(135deg, rgba(255,255,255,0.98) 0%, rgba(240,250,255,0.98) 100%);
+            padding: 40px;
+            margin: 20px auto;
+            max-width: 1360px;
+            width: 95%;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+        }
+        
+        #info-panel h1 {
+            color: #1e3c72;
+            margin: 0 0 15px 0;
+            font-size: 2.5em;
+        }
+        
+        #info-panel > p {
+            color: #555;
+            font-size: 1.1em;
+            margin-bottom: 25px;
+            line-height: 1.6;
+        }
+        
+        h2 {
+            color: #2a5298;
+            margin: 30px 0 20px 0;
+            font-size: 1.8em;
+            border-bottom: 3px solid #FFD700;
+            padding-bottom: 10px;
+        }
+        
+        .feature-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+        
+        .feature {
+            background: linear-gradient(135deg, #f0f4ff 0%, #e8f0ff 100%);
+            padding: 25px;
+            border-radius: 12px;
+            border-left: 5px solid #2a5298;
+            transition: transform 0.3s, box-shadow 0.3s;
+            box-shadow: 0 5px 15px rgba(42, 82, 152, 0.1);
+        }
+        
+        .feature:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(42, 82, 152, 0.2);
+        }
+        
+        .feature h3 {
+            margin: 0 0 12px 0;
+            color: #1e3c72;
+            font-size: 1.3em;
+        }
+        
+        .feature p {
+            margin: 0;
+            color: #555;
+            font-size: 0.95em;
+            line-height: 1.5;
+        }
+        
+        ul {
+            color: #555;
+            margin: 15px 0;
+            padding-left: 25px;
+        }
+        
+        ul li {
+            margin-bottom: 12px;
+            line-height: 1.6;
+        }
+        
+        ul li strong {
+            color: #1e3c72;
+        }
+        
+        .footer {
+            text-align: center;
+            color: white;
+            padding: 30px;
+            margin-top: 20px;
+            font-size: 0.9em;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+        }
+        
+        @media (max-width: 768px) {
+            #info-panel {
+                padding: 20px;
+            }
+            
+            #info-panel h1 {
+                font-size: 1.8em;
+            }
+            
+            h2 {
+                font-size: 1.4em;
+            }
+            
+            .feature-list {
+                grid-template-columns: 1fr;
+            }
+            
+            .header h1 {
+                font-size: 2em;
+            }
+        }
     </style>
 </head>
 <body>
-    <div id="info-panel">
-        <h1>🏛️ Mansion Tycoon - AI Management Simulation</h1>
-        <p>Welcome to your luxury entertainment venue! Make strategic decisions, manage your staff and guests, and build your reputation in this AI-driven simulation game.</p>
-        
-        <h2>🎮 Game Features</h2>
-        <div class="feature-list">
-            <div class="feature">
-                <h3>🤖 AI-Powered Events</h3>
-                <p>Dynamic events generated by AI that adapt to your play style and decisions</p>
-            </div>
-            <div class="feature">
-                <h3>👥 Procedural Characters</h3>
-                <p>Unique staff and guests with individual traits, preferences, and satisfaction levels</p>
-            </div>
-            <div class="feature">
-                <h3>💰 Business Management</h3>
-                <p>Balance finances, reputation, and satisfaction to build a thriving venue</p>
-            </div>
-            <div class="feature">
-                <h3>📊 Learning System</h3>
-                <p>AI tracks your choices and generates more relevant scenarios over time</p>
-            </div>
-            <div class="feature">
-                <h3>🎯 Strategic Decisions</h3>
-                <p>Every choice impacts your money, reputation, and character relationships</p>
-            </div>
-            <div class="feature">
-                <h3>📈 Progressive Gameplay</h3>
-                <p>Expand your venue, hire staff, and attract VIP guests as you grow</p>
-            </div>
-        </div>
-        
-        <h2>🎲 How to Play</h2>
-        <ul>
-            <li><strong>Read Events:</strong> Each day presents new challenges and opportunities</li>
-            <li><strong>Make Choices:</strong> Select from multiple options that affect your business</li>
-            <li><strong>Manage Resources:</strong> Balance money, reputation, and character satisfaction</li>
-            <li><strong>Build Relationships:</strong> Keep staff and guests happy for long-term success</li>
-            <li><strong>Grow Your Empire:</strong> Reinvest profits to expand and improve your venue</li>
-        </ul>
+    <div class="header">
+        <h1>🏛️ Mansion Tycoon</h1>
+        <p>An AI-Powered Business Simulation Game</p>
     </div>
     
     <div id="game-container">
         <div id="loading">
             <div style="text-align: center;">
-                Loading Game...
+                <p style="margin-bottom: 20px;">🎮 Initializing Game...</p>
                 <div class="spinner"></div>
+                <p style="margin-top: 20px; font-size: 0.8em;">Powered by Cocos2d-x</p>
             </div>
         </div>
         <canvas id="canvas" width="1280" height="720"></canvas>
+    </div>
+
+    <div id="info-panel">
+        <h1>📋 Game Overview</h1>
+        <p>Welcome to your luxury entertainment empire! Build your business from the ground up with strategic decisions, AI-powered events, and dynamic character interactions.</p>
+        
+        <h2>✨ Key Features</h2>
+        <div class="feature-list">
+            <div class="feature">
+                <h3>🤖 AI-Driven Events</h3>
+                <p>Intelligent system generates unique scenarios that adapt to your play style and learning patterns</p>
+            </div>
+            <div class="feature">
+                <h3>👥 Dynamic Characters</h3>
+                <p>Procedurally generated staff and guests with individual traits, preferences, and satisfaction levels</p>
+            </div>
+            <div class="feature">
+                <h3>💰 Business Management</h3>
+                <p>Balance finances, staffing, guest satisfaction, and reputation to build a thriving venue</p>
+            </div>
+            <div class="feature">
+                <h3>📊 Learning System</h3>
+                <p>The AI learns from your decisions to generate increasingly relevant and personalized scenarios</p>
+            </div>
+            <div class="feature">
+                <h3>🎯 Meaningful Choices</h3>
+                <p>Every decision impacts money, reputation, relationships, and long-term business success</p>
+            </div>
+            <div class="feature">
+                <h3>📈 Progressive Growth</h3>
+                <p>Expand your operations, hire quality staff, and attract VIP guests as your reputation grows</p>
+            </div>
+        </div>
+        
+        <h2>🎮 How to Play</h2>
+        <ul>
+            <li><strong>Manage Your Business:</strong> Monitor your finances, staff satisfaction, and guest experience</li>
+            <li><strong>Make Strategic Decisions:</strong> Each day presents unique challenges requiring thoughtful choices</li>
+            <li><strong>Build Relationships:</strong> Keep your team happy and your guests satisfied for recurring revenue</li>
+            <li><strong>Grow Your Reputation:</strong> Higher reputation attracts better guests and opportunities</li>
+            <li><strong>Adapt to AI Scenarios:</strong> Respond to procedurally generated events specific to your playstyle</li>
+            <li><strong>Achieve Success:</strong> Balance short-term profits with long-term business growth</li>
+        </ul>
+        
+        <h2>🌟 Game Mechanics</h2>
+        <ul>
+            <li><strong>Money:</strong> Earn from guests, spend on staff and expansion, invest in improvements</li>
+            <li><strong>Reputation:</strong> Grows with good decisions, attracts premium guests and partnerships</li>
+            <li><strong>Staff Satisfaction:</strong> Affects retention, service quality, and guest experience</li>
+            <li><strong>Guest Loyalty:</strong> Happy guests return more often and spend more money</li>
+            <li><strong>Daily Operations:</strong> Each day brings income/expenses and new decision opportunities</li>
+        </ul>
+        
+        <h2>💡 Tips for Success</h2>
+        <ul>
+            <li>Invest early in staff training to improve service quality</li>
+            <li>Balance aggressive expansion with financial stability</li>
+            <li>Pay attention to character preferences and event patterns</li>
+            <li>Build reputation gradually - it attracts high-value guests</li>
+            <li>Monitor cash reserves carefully for unexpected opportunities</li>
+            <li>The AI learns your style - adapt your strategy over time</li>
+        </ul>
+    </div>
+    
+    <div class="footer">
+        <p>🏛️ Mansion Tycoon v1.0 | Built with Cocos2d-x & AI | © 2026</p>
+        <p>🎮 Strategic Business Simulation | 🤖 Adaptive AI System | 💼 Professional Gameplay</p>
     </div>
 
     <script type="text/javascript">
         var Module = {
             canvas: document.getElementById('canvas'),
             onRuntimeInitialized: function() {
-                document.getElementById('loading').style.display = 'none';
+                var loadingDiv = document.getElementById('loading');
+                if (loadingDiv) {
+                    loadingDiv.style.display = 'none';
+                }
+            },
+            print: function(text) {
+                console.log(text);
+            },
+            printErr: function(text) {
+                console.error(text);
             }
         };
     </script>

@@ -1,5 +1,9 @@
 #include "GameScene.h"
 #include "SaveManager.h"
+#include "SpriteFactory.h"
+#include "AvatarGenerator.h"
+#include "ProceduralArt.h"
+#include "UIThemeManager.h"
 #include "2d/CCParticleSystemQuad.h"
 #include "2d/CCTransition.h"
 
@@ -20,9 +24,16 @@ bool GameScene::init()
     auto visibleSize = Director::getInstance()->getVisibleSize();
     Vec2 origin = Director::getInstance()->getVisibleOrigin();
     
-    // Background with gradient
-    auto bg = LayerGradient::create(Color4B(30, 30, 50, 255), Color4B(15, 15, 35, 255));
+    // Background with gradient using theme manager
+    auto bg = UIThemeManager::getInstance()->createThemedBackground("default");
     this->addChild(bg, -1);
+    
+    // Add decorative pattern
+    auto pattern = ProceduralArt::getInstance()->generateDecorativePattern(
+        visibleSize.width, visibleSize.height, "dots"
+    );
+    pattern->setOpacity(50);
+    this->addChild(pattern, 0);
     
     // Add ambient particles for atmosphere
     auto particles = ParticleSystemQuad::create("Particles/Galaxy.plist");
@@ -48,43 +59,64 @@ void GameScene::setupUI()
     auto visibleSize = Director::getInstance()->getVisibleSize();
     Vec2 origin = Director::getInstance()->getVisibleOrigin();
     
-    // Top bar - Stats
-    auto topBar = LayerColor::create(Color4B(50, 50, 70, 255), visibleSize.width, 80);
-    topBar->setPosition(Vec2(origin.x, origin.y + visibleSize.height - 80));
+    // Top bar - Stats with enhanced visuals
+    auto topBar = SpriteFactory::getInstance()->createPanel(Size(visibleSize.width, 100), "Status");
+    topBar->setPosition(Vec2(origin.x, origin.y + visibleSize.height - 100));
     this->addChild(topBar, 1);
     
-    moneyLabel = Label::createWithSystemFont("Money: $100,000", "Arial", 24);
-    moneyLabel->setPosition(Vec2(origin.x + 150, origin.y + visibleSize.height - 40));
-    moneyLabel->setColor(Color3B::GREEN);
+    // Money icon and label
+    auto moneyIcon = ProceduralArt::getInstance()->generateIcon("money", 32);
+    moneyIcon->setPosition(Vec2(origin.x + 80, origin.y + visibleSize.height - 50));
+    this->addChild(moneyIcon, 2);
+    
+    moneyLabel = Label::createWithSystemFont("$100,000", "Arial", 24);
+    moneyLabel->setPosition(Vec2(origin.x + 150, origin.y + visibleSize.height - 50));
+    moneyLabel->setColor(Color3B(100, 255, 100));
+    moneyLabel->enableShadow();
     this->addChild(moneyLabel, 2);
     
-    reputationLabel = Label::createWithSystemFont("Reputation: 50", "Arial", 24);
-    reputationLabel->setPosition(Vec2(origin.x + 400, origin.y + visibleSize.height - 40));
-    reputationLabel->setColor(Color3B::YELLOW);
+    // Reputation icon and label
+    auto repIcon = ProceduralArt::getInstance()->generateIcon("star", 32);
+    repIcon->setPosition(Vec2(origin.x + 320, origin.y + visibleSize.height - 50));
+    this->addChild(repIcon, 2);
+    
+    reputationLabel = Label::createWithSystemFont("50", "Arial", 24);
+    reputationLabel->setPosition(Vec2(origin.x + 380, origin.y + visibleSize.height - 50));
+    reputationLabel->setColor(Color3B(255, 215, 0));
+    reputationLabel->enableShadow();
     this->addChild(reputationLabel, 2);
     
-    dayLabel = Label::createWithSystemFont("Day: 1", "Arial", 24);
-    dayLabel->setPosition(Vec2(origin.x + 650, origin.y + visibleSize.height - 40));
-    reputationLabel->setColor(Color3B::WHITE);
+    // Day label with building icon
+    auto dayIcon = ProceduralArt::getInstance()->generateIcon("building", 32);
+    dayIcon->setPosition(Vec2(origin.x + 560, origin.y + visibleSize.height - 50));
+    this->addChild(dayIcon, 2);
+    
+    dayLabel = Label::createWithSystemFont("Day 1", "Arial", 24);
+    dayLabel->setPosition(Vec2(origin.x + 640, origin.y + visibleSize.height - 50));
+    dayLabel->setColor(Color3B::WHITE);
+    dayLabel->enableShadow();
     this->addChild(dayLabel, 2);
     
-    // Event Panel
+    // Event Panel with enhanced visuals
     eventPanel = Layer::create();
     this->addChild(eventPanel, 3);
     
-    auto eventBg = LayerColor::create(Color4B(40, 40, 60, 230), 800, 400);
-    eventBg->setPosition(Vec2(origin.x + visibleSize.width/2 - 400, origin.y + visibleSize.height/2 - 200));
+    auto eventBg = SpriteFactory::getInstance()->createPanel(Size(800, 450), "Event");
+    eventBg->setPosition(Vec2(origin.x + visibleSize.width/2 - 400, origin.y + visibleSize.height/2 - 225));
     eventPanel->addChild(eventBg);
     
     eventTitle = Label::createWithSystemFont("Event Title", "Arial", 28);
-    eventTitle->setPosition(Vec2(origin.x + visibleSize.width/2, origin.y + visibleSize.height/2 + 150));
-    eventTitle->setColor(Color3B::ORANGE);
+    eventTitle->setPosition(Vec2(origin.x + visibleSize.width/2, origin.y + visibleSize.height/2 + 170));
+    eventTitle->setColor(Color3B(255, 200, 100));
+    eventTitle->enableBold();
+    eventTitle->enableShadow();
     eventPanel->addChild(eventTitle);
     
     eventDescription = Label::createWithSystemFont("Event description goes here...", "Arial", 20);
-    eventDescription->setPosition(Vec2(origin.x + visibleSize.width/2, origin.y + visibleSize.height/2 + 50));
-    eventDescription->setDimensions(700, 0);
+    eventDescription->setPosition(Vec2(origin.x + visibleSize.width/2, origin.y + visibleSize.height/2 + 70));
+    eventDescription->setDimensions(750, 0);
     eventDescription->setAlignment(TextHAlignment::CENTER);
+    eventDescription->setColor(Color3B(220, 220, 255));
     eventPanel->addChild(eventDescription);
     
     // Choice buttons
@@ -149,10 +181,14 @@ void GameScene::setupUI()
     sideBg->setPosition(Vec2(origin.x + visibleSize.width - 300, origin.y + 10));
     characterPanel->addChild(sideBg);
     
-    auto charTitle = Label::createWithSystemFont("Staff & Guests", "Arial", 22);
+    auto charTitle = Label::createWithSystemFont("👥 Staff & Guests", "Arial", 22);
     charTitle->setPosition(Vec2(origin.x + visibleSize.width - 150, origin.y + visibleSize.height - 120));
     charTitle->setColor(Color3B::CYAN);
     characterPanel->addChild(charTitle);
+    
+    // Scrollable character display area
+    characterCardsLayer = Layer::create();
+    characterPanel->addChild(characterCardsLayer);
     
     characterList = Label::createWithSystemFont("Loading...", "Arial", 16);
     characterList->setPosition(Vec2(origin.x + visibleSize.width - 150, origin.y + visibleSize.height - 250));
@@ -326,4 +362,37 @@ void GameScene::nextDay()
     
     updateUI();
     showEvent();
+}
+
+void GameScene::createCharacterCards()
+{
+    characterCardsLayer->removeAllChildren();
+    
+    auto gm = GameManager::getInstance();
+    int yPos = 150;
+    
+    // Display staff
+    for (const auto& staff : gm->getStaff()) {
+        auto card = CharacterSprite::createCharacterDisplay(
+            staff.name, staff.role, staff.satisfaction
+        );
+        card->setPosition(Vec2(150, yPos));
+        characterCardsLayer->addChild(card);
+        yPos -= 100;
+    }
+    
+    // Display guests
+    for (const auto& guest : gm->getGuests()) {
+        auto card = CharacterSprite::createCharacterDisplay(
+            guest.name, guest.role, guest.satisfaction
+        );
+        card->setPosition(Vec2(150, yPos));
+        characterCardsLayer->addChild(card);
+        yPos -= 100;
+    }
+}
+
+void GameScene::updateCharacterCards()
+{
+    createCharacterCards();
 }
